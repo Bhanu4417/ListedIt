@@ -66,111 +66,85 @@ export default function Home({ navigate }) {
 
   return (
     <div className="fade-in">
-      {/* Hero Section */}
-      <section className="home-hero">
-        <div className="home-hero-bg" />
-        <div className="home-hero-content">
-          <h2>Listen Now</h2>
-          <p>Discover millions of songs. Stream in high fidelity. Your music, your way.</p>
-        </div>
-      </section>
+      <div className="search-container" style={{ margin: '-8px 0 32px 0' }}>
+        <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input 
+          type="text" 
+          className="search-bar" 
+          placeholder="Search for music, artists..."
+          onFocus={() => navigate('search')}
+        />
+      </div>
 
-      {/* Featured Album Cards from first section */}
       {sections[0] && (
         <section>
           <div className="section-header">
-            <h2>Featured</h2>
+            <h2>New Releases</h2>
+            <span className="see-all">View All</span>
           </div>
-          <div className="album-grid">
-            {sections[0].tracks.slice(0, 6).map(track => (
+          <div className="new-releases-grid">
+            {sections[0].tracks.slice(0, 3).map((track, idx) => (
               <div
                 key={track.id}
-                className="album-card slide-up"
+                className={`new-release-card slide-up ${idx === 0 ? 'primary-card' : ''}`}
                 onClick={() => navigate('album', track.album?.id)}
               >
-                <div className="album-card-cover">
-                  <img
-                    src={getCoverUrl(track.album?.cover)}
-                    alt={track.album?.title}
-                    loading="lazy"
-                    onError={e => { e.target.style.display = 'none'; }}
-                  />
-                  <div className="play-overlay">
-                    <button className="play-overlay-btn" onClick={(e) => {
-                      e.stopPropagation();
-                      handlePlayTrack(track, sections[0].tracks);
-                    }}>
-                      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    </button>
+                <img
+                  src={getCoverUrl(track.album?.cover)}
+                  alt={track.album?.title}
+                  loading="lazy"
+                  onError={e => { e.target.style.display = 'none'; }}
+                />
+                <div className="new-release-info">
+                  <div className="new-release-badge">
+                    {idx === 0 ? "EDITOR'S CHOICE" : idx === 1 ? "NEW SINGLE" : "HOT RELEASE"}
                   </div>
+                  <div className="new-release-title">{track.album?.title || track.title}</div>
+                  <div className="new-release-artist">{track.artist?.name || track.artists?.[0]?.name}</div>
+                  <button className="new-release-btn" onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlayTrack(track, sections[0].tracks);
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Listen Now
+                  </button>
                 </div>
-                <div className="album-card-title">{track.album?.title || track.title}</div>
-                <div className="album-card-artist">{track.artist?.name || track.artists?.[0]?.name}</div>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* Track Lists */}
-      {sections.map((section, i) => (
-        <section key={i} style={{ marginBottom: 48 }}>
+      {sections[1] && (
+        <section>
           <div className="section-header">
-            <h2>{section.title}</h2>
+            <h2>Recommended for You</h2>
           </div>
-          <div className="track-list">
-            <div className="track-list-header">
-              <span>#</span>
-              <span></span>
-              <span>Title</span>
-              <span>Album</span>
-              <span>⏱</span>
-            </div>
-            {section.tracks.slice(0, 5).map((track, idx) => (
+          <div className="recommended-grid">
+            {sections[1].tracks.slice(0, 8).map(track => (
               <div
                 key={track.id}
-                className={`track-item ${player.currentTrack?.id === track.id ? 'playing' : ''}`}
-                onClick={() => handlePlayTrack(track, section.tracks)}
+                className="recommended-card slide-up"
+                onClick={() => navigate('album', track.album?.id)}
               >
-                <div className="track-item-number">{idx + 1}</div>
-                <div className="track-item-cover">
+                <div className="recommended-cover">
                   <img
-                    src={getCoverUrl(track.album?.cover, 160)}
-                    alt=""
+                    src={getCoverUrl(track.album?.cover)}
+                    alt={track.album?.title}
                     loading="lazy"
                     onError={e => { e.target.style.display = 'none'; }}
                   />
                 </div>
-                <div className="track-item-info">
-                  <div className="track-item-title">{track.title}</div>
-                  <div
-                    className="track-item-artist"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const artistId = track.artist?.id || track.artists?.[0]?.id;
-                      if (artistId) navigate('artist', artistId);
-                    }}
-                  >
-                    {track.artist?.name || track.artists?.[0]?.name}
-                  </div>
-                </div>
-                <div
-                  className="track-item-album"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (track.album?.id) navigate('album', track.album.id);
-                  }}
-                >
-                  {track.album?.title}
-                </div>
-                <div className="track-item-duration">
-                  {formatDuration(track.duration)}
-                </div>
+                <div className="recommended-title">{track.album?.title || track.title}</div>
+                <div className="recommended-artist">{track.artist?.name || track.artists?.[0]?.name}</div>
               </div>
             ))}
           </div>
         </section>
-      ))}
+      )}
     </div>
   );
 }
